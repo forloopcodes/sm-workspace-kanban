@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, type MouseEvent, type MutableRefObject, type PointerEvent } from "react";
+import { createPortal } from "react-dom";
 import styled, { css } from "styled-components";
-import { CrossListDragProvider, Icon, t, useCrossListDrag } from "@soft-machine/sdk";
+import { CrossListDragProvider, DragPreview, Icon, t, useCrossListDrag } from "@soft-machine/sdk";
 import { BUCKET_LABELS, SCHEDULE_BUCKETS, bucketDate, bucketFor, combineDayAndTime, deadlineMs, hasTime, timeInputValue, type ScheduleBucket } from "../../state/dates";
 import { PRIORITY_RANK } from "../../state/tones";
 import type { Board, Card, Column } from "../../state/types";
@@ -32,7 +33,7 @@ const BucketHeader = styled.div<{ $tone?: "danger" | "accent" | "default" }>`
   text-transform: uppercase;
   letter-spacing: 0.3px;
   color: ${({ $tone }) => ($tone === "danger" ? t.status.error : $tone === "accent" ? t.accent.primary : t.text.muted)};
-  & > span {
+  & > .label {
     flex: 1;
   }
 `;
@@ -167,7 +168,30 @@ function BucketList({
     listRef: (element: HTMLDivElement | null) => void;
     isDragActive: boolean;
     isReceiving: boolean;
+    draggingId: string | null;
+    draggingFromListId: string | null;
+    dragPreviewProps: { x: number; y: number; width: number; height: number; offsetX: number; offsetY: number };
   };
+
+  const draggedCard = drag.isDragActive && drag.draggingFromListId === `schedule:${bucket}` ? cards.find((c) => c.id === drag.draggingId) : undefined;
+  const preview =
+    draggedCard && typeof document !== "undefined"
+      ? createPortal(
+          <DragPreview
+            $x={drag.dragPreviewProps.x}
+            $y={drag.dragPreviewProps.y}
+            $offsetX={drag.dragPreviewProps.offsetX}
+            $offsetY={drag.dragPreviewProps.offsetY}
+            $width={drag.dragPreviewProps.width}
+            $height={drag.dragPreviewProps.height}
+          >
+            <div style={{ background: t.bg.elevated, height: "100%" }}>
+              <TaskRow card={draggedCard} board={boards[draggedCard.boardId]} column={columns[draggedCard.columnId]} showBoard={showBoard} onOpen={() => {}} onToggleComplete={() => {}} onContextMenu={() => {}} />
+            </div>
+          </DragPreview>,
+          document.body
+        )
+      : null;
 
   // Swallow the click that follows a completed drag.
   const wasActive = useRef(false);
@@ -187,9 +211,10 @@ function BucketList({
 
   return (
     <Bucket ref={bucket === "today" ? (todayRef as never) : undefined} $receiving={drag.isReceiving} aria-label={BUCKET_LABELS[bucket]} style={hidden ? { padding: 0 } : undefined}>
+      {preview}
       {!hidden ? (
         <BucketHeader $tone={tone}>
-          <span>{BUCKET_LABELS[bucket]}</span>
+          <span className="label">{BUCKET_LABELS[bucket]}</span>
           <Count>{cards.length}</Count>
         </BucketHeader>
       ) : null}

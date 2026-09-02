@@ -33,7 +33,7 @@ const FilterRow = styled.label`
     background: ${t.bg.secondary};
     color: ${t.text.primary};
   }
-  & > span {
+  & > .label {
     flex: 1;
     min-width: 0;
     white-space: nowrap;
@@ -102,7 +102,7 @@ export function BoardSidebar({
     <Sidebar $open={open} aria-hidden={!open}>
       <SidebarSection>
         <SidebarHeading>
-          <span>Boards</span>
+          <span className="label">Boards</span>
           <IconButton title="New board" aria-label="New board" onClick={onCreateBoard}>
             <Icon name="Plus" size={12} />
           </IconButton>
@@ -150,7 +150,7 @@ export function BoardSidebar({
                 }}
               />
             ) : (
-              <span>{item.name}</span>
+              <span className="label">{item.name}</span>
             )}
             <RowActions>
               <IconButton
@@ -170,7 +170,7 @@ export function BoardSidebar({
 
       <SidebarGrow>
         <SidebarHeading>
-          <span>Filters</span>
+          <span className="label">Filters</span>
           {countFilters(filters) > 0 ? (
             <IconButton
               title="Clear filters"
@@ -183,22 +183,22 @@ export function BoardSidebar({
         </SidebarHeading>
         <FilterRow>
           <Checkbox checked={filters.mine} onChange={() => toggle("mine")} aria-label="Assigned to me" />
-          <span>Assigned to me</span>
+          <span className="label">Assigned to me</span>
         </FilterRow>
         <FilterRow>
           <Checkbox checked={filters.unassigned} onChange={() => toggle("unassigned")} aria-label="Unassigned" />
-          <span>Unassigned</span>
+          <span className="label">Unassigned</span>
         </FilterRow>
         <FilterRow>
           <Checkbox checked={filters.overdue} onChange={() => toggle("overdue")} aria-label="Overdue" />
-          <span>Overdue</span>
+          <span className="label">Overdue</span>
         </FilterRow>
         <FilterRow>
           <Checkbox checked={filters.hideCompleted} onChange={() => toggle("hideCompleted")} aria-label="Hide completed" />
-          <span>Hide completed</span>
+          <span className="label">Hide completed</span>
         </FilterRow>
         <FilterRow as="div">
-          <span>Due within</span>
+          <span className="label">Due within</span>
           <SmallSelect
             aria-label="Due within"
             value={filters.dueWithinDays === null ? "" : String(filters.dueWithinDays)}
@@ -217,13 +217,13 @@ export function BoardSidebar({
         {board && board.labels.length > 0 ? (
           <>
             <SidebarHeading style={{ marginTop: 8 }}>
-              <span>Labels</span>
+              <span className="label">Labels</span>
             </SidebarHeading>
             {board.labels.map((label) => (
               <FilterRow key={label.id}>
                 <Checkbox checked={filters.labels.includes(label.id)} onChange={() => toggleInList("labels", label.id)} aria-label={label.name} />
                 <ToneDot $tone={label.tone} />
-                <span>{label.name}</span>
+                <span className="label">{label.name}</span>
                 <Count>{labelCounts.get(label.id) ?? 0}</Count>
               </FilterRow>
             ))}
@@ -231,25 +231,25 @@ export function BoardSidebar({
         ) : null}
 
         <SidebarHeading style={{ marginTop: 8 }}>
-          <span>Priority</span>
+          <span className="label">Priority</span>
         </SidebarHeading>
         {PRIORITIES.filter((p) => p !== "none").map((priority) => (
           <FilterRow key={priority}>
             <Checkbox checked={filters.priorities.includes(priority)} onChange={() => toggleInList("priorities", priority)} aria-label={priorityLabel(priority)} />
-            <span>{priorityLabel(priority)}</span>
+            <span className="label">{priorityLabel(priority)}</span>
           </FilterRow>
         ))}
 
         {members.length > 0 ? (
           <>
             <SidebarHeading style={{ marginTop: 8 }}>
-              <span>People</span>
+              <span className="label">People</span>
             </SidebarHeading>
             {members.map((member) => (
               <FilterRow key={member.id}>
                 <Checkbox checked={filters.assignees.includes(member.id)} onChange={() => toggleInList("assignees", member.id)} aria-label={member.name} />
                 <UserAvatar name={member.name} avatarUrl={member.avatarUrl ?? null} size={14} />
-                <span>{member.name}</span>
+                <span className="label">{member.name}</span>
               </FilterRow>
             ))}
           </>
@@ -269,7 +269,7 @@ export function BoardSidebar({
             style={{ marginTop: 8 }}
           >
             <Icon name="Box" size={12} />
-            <span>Archive</span>
+            <span className="label">Archive</span>
             <Count>{archivedCount}</Count>
           </SidebarRow>
         ) : null}
@@ -278,8 +278,8 @@ export function BoardSidebar({
       <SidebarFooter>
         <UserAvatar name={viewer.name} avatarUrl={viewer.avatarUrl} size={24} />
         <FooterText>
-          <span>Shared board</span>
-          <span>{onlinePeople.length > 0 ? `${onlinePeople.length} other${onlinePeople.length === 1 ? "" : "s"} here` : "Shared with everyone here"}</span>
+          <span className="label">Shared board</span>
+          <span className="label">{onlinePeople.length > 0 ? `${onlinePeople.length} other${onlinePeople.length === 1 ? "" : "s"} here` : "Shared with everyone here"}</span>
         </FooterText>
         <div style={{ marginLeft: "auto" }}>
           <AvatarStack people={onlinePeople} size={16} max={3} />

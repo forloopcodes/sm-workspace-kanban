@@ -70,7 +70,7 @@ const ChecklistRow = styled.div`
   gap: 8px;
   min-height: 26px;
   min-width: 0;
-  & > span {
+  & > .label {
     flex: 1;
     min-width: 0;
     font-size: ${t.typography.base};
@@ -399,7 +399,9 @@ export function CardEditor({ cardId, onClose, crossAction, onDeleted }: CardEdit
             {card.checklist.map((item) => (
               <ChecklistRow key={item.id}>
                 <Checkbox checked={item.done} onChange={(checked: boolean) => store.updateChecklistItem(card.id, item.id, { done: checked })} aria-label={item.text} />
-                <ChecklistText $done={item.done}>{item.text}</ChecklistText>
+                <ChecklistText className="label" $done={item.done}>
+                  {item.text}
+                </ChecklistText>
                 <IconButton title="Remove item" aria-label={`Remove ${item.text}`} onClick={() => store.removeChecklistItem(card.id, item.id)}>
                   <Icon name="X" size={12} />
                 </IconButton>

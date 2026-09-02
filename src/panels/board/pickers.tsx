@@ -27,7 +27,7 @@ const CheckRow = styled.label`
   &:hover {
     background: ${t.bg.tertiary};
   }
-  & > span {
+  & > .label {
     flex: 1;
     min-width: 0;
     white-space: nowrap;
@@ -126,7 +126,7 @@ export function LabelPicker({
           <CheckRow key={label.id}>
             <Checkbox checked={selected.includes(label.id)} onChange={() => onToggle(label.id)} aria-label={label.name} />
             <ToneDot $tone={label.tone} />
-            <span>{label.name}</span>
+            <span className="label">{label.name}</span>
           </CheckRow>
         ))}
         {onCreate ? (
@@ -187,7 +187,7 @@ export function AssigneePicker({
             <CheckRow key={member.id}>
               <Checkbox checked={checked} onChange={() => onToggle(member)} aria-label={member.name} />
               <UserAvatar name={member.name} avatarUrl={member.avatarUrl ?? null} size={16} />
-              <span>
+              <span className="label">
                 {member.name}
                 {viewer && member.id === viewer.id ? " (you)" : ""}
               </span>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { createPortal } from "react-dom";
 import styled, { css } from "styled-components";
-import { Icon, IconButton, t, useCrossListDrag } from "@soft-machine/sdk";
+import { DragPreview, Icon, IconButton, t, useCrossListDrag } from "@soft-machine/sdk";
 import type { Card, Column as ColumnModel } from "../../state/types";
 import { Count, ToneDot } from "../../ui/shared";
 import { useBoardUi, type LaneValue } from "./boardContext";
@@ -263,7 +264,27 @@ export function Column({ column, cards, listId, group, laneValue, columnDrag, to
     isReceiving: boolean;
     draggingId: string | null;
     draggingFromListId: string | null;
+    dragPreviewProps: { x: number; y: number; width: number; height: number; offsetX: number; offsetY: number };
   };
+
+  // Floating preview of the dragged card, rendered by the source list only.
+  const draggedCard = drag.isDragActive && drag.draggingFromListId === listId ? cards.find((c) => c.id === drag.draggingId) : undefined;
+  const preview =
+    draggedCard && typeof document !== "undefined"
+      ? createPortal(
+          <DragPreview
+            $x={drag.dragPreviewProps.x}
+            $y={drag.dragPreviewProps.y}
+            $offsetX={drag.dragPreviewProps.offsetX}
+            $offsetY={drag.dragPreviewProps.offsetY}
+            $width={drag.dragPreviewProps.width}
+            $height={drag.dragPreviewProps.height}
+          >
+            <CardTile card={draggedCard} />
+          </DragPreview>,
+          document.body
+        )
+      : null;
 
   // Stream drag state over presence (one write per change, not per pointer move).
   const lastPresence = useRef<string>("");
@@ -323,6 +344,8 @@ export function Column({ column, cards, listId, group, laneValue, columnDrag, to
   const showEmptyDrop = cards.length === 0;
 
   return (
+    <>
+    {preview}
     <Shell
       ref={columnDrag?.ref as never}
       data-drag-item={column.id}
@@ -420,6 +443,7 @@ export function Column({ column, cards, listId, group, laneValue, columnDrag, to
         </>
       )}
     </Shell>
+    </>
   );
 }
 

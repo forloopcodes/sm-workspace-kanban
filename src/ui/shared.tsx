@@ -231,7 +231,7 @@ export const SidebarRow = styled.div<{ $active?: boolean }>`
     css`
       background: ${t.bg.secondary};
     `}
-  & > span {
+  & > .label {
     flex: 1;
     min-width: 0;
     white-space: nowrap;

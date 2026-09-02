@@ -1,8 +1,23 @@
 import { useCallback, useMemo, useRef, useState, type PointerEvent } from "react";
+import { createPortal } from "react-dom";
 import styled from "styled-components";
-import { CrossListDragProvider, Icon, t, useCrossListDrag } from "@soft-machine/sdk";
+import { CrossListDragProvider, DragPreview, Icon, t, useCrossListDrag } from "@soft-machine/sdk";
 import { PRIORITIES, type Card, type Column as ColumnModel } from "../../state/types";
-import { PRIORITY_RANK, priorityLabel } from "../../state/tones";
+import { PRIORITY_RANK, priorityLabel, toneColor } from "../../state/tones";
+
+const ColumnGhost = styled.div`
+  height: 100%;
+  min-height: 34px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: calc(${t.radius} * 1.25);
+  background: ${t.bg.tertiary};
+  font-size: ${t.typography.sm};
+  font-weight: 600;
+  color: ${t.text.primary};
+`;
 import { InlineInput, Muted, Segment, SegmentGroup, useElementWidth } from "../../ui/shared";
 import { useBoardUi, type Lane } from "./boardContext";
 import { Column } from "./Column";
@@ -250,10 +265,36 @@ function ColumnsRow({ lane, cardsByColumn }: { lane: Lane | null; cardsByColumn:
     getItemState: (id: string) => { isDragging: boolean; showDropBefore: boolean; showDropAfter: boolean };
     getItemHandlers: (id: string) => { onPointerDown: (event: PointerEvent<HTMLElement>) => void; ref: (element: HTMLElement | null) => void };
     listRef: (element: HTMLDivElement | null) => void;
+    isDragActive: boolean;
+    draggingId: string | null;
+    dragPreviewProps: { x: number; y: number; width: number; height: number; offsetX: number; offsetY: number };
   };
+
+  const draggedColumn = drag.isDragActive ? columns.find((c) => c.id === drag.draggingId) : undefined;
 
   return (
     <div ref={drag.listRef} style={{ display: "flex", gap: 10, alignItems: "flex-start", minHeight: 0, maxHeight: "100%" }}>
+      {draggedColumn && typeof document !== "undefined"
+        ? createPortal(
+            <DragPreview
+              $x={drag.dragPreviewProps.x}
+              $y={drag.dragPreviewProps.y}
+              $offsetX={drag.dragPreviewProps.offsetX}
+              $offsetY={drag.dragPreviewProps.offsetY}
+              $width={drag.dragPreviewProps.width}
+              $height={Math.min(drag.dragPreviewProps.height, 160)}
+            >
+              <ColumnGhost>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: toneColor(draggedColumn.tone) }} />
+                  {draggedColumn.name}
+                </span>
+                <Muted>{(cardsByColumn[draggedColumn.id] ?? []).length} cards</Muted>
+              </ColumnGhost>
+            </DragPreview>,
+            document.body
+          )
+        : null}
       {columns.map((column) => {
         const all = cardsByColumn[column.id] ?? [];
         const cards = lane ? all.filter(lane.match) : all;

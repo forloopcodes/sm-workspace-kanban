@@ -27,7 +27,7 @@ const GroupHeader = styled.button`
   color: ${t.text.muted};
   cursor: pointer;
   text-align: left;
-  & > span {
+  & > .label {
     flex: 1;
     min-width: 0;
     white-space: nowrap;
@@ -185,7 +185,7 @@ export function ListView({ cards, boards, columns, columnsByBoard, groupBy, sort
                 <Chevron $open={!isCollapsed}>
                   <Icon name="ChevronRight" size={11} />
                 </Chevron>
-                <span>{group.label}</span>
+                <span className="label">{group.label}</span>
                 <Count>{group.cards.length}</Count>
               </GroupHeader>
             ) : null}

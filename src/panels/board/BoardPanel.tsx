@@ -64,7 +64,7 @@ const ArchiveRow = styled.div`
   gap: 8px;
   min-height: 28px;
   min-width: 0;
-  & > span {
+  & > .label {
     flex: 1;
     min-width: 0;
     white-space: nowrap;
@@ -410,7 +410,7 @@ function BoardPanelInner({ instanceId }: { instanceId: string }) {
         {archived.map((card) => (
           <ArchiveRow key={card.id}>
             <Muted style={{ fontFamily: t.fontMono }}>#{card.number}</Muted>
-            <span>{card.title}</span>
+            <span className="label">{card.title}</span>
             <GhostButton type="button" onClick={() => store.setArchived(card.id, false)}>
               Restore
             </GhostButton>

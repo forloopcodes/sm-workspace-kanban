@@ -110,7 +110,7 @@ const RowLabel = styled.div<{ $completed?: boolean }>`
   font-size: ${t.typography.sm};
   color: ${({ $completed }) => ($completed ? t.text.muted : t.text.primary)};
   cursor: pointer;
-  & > span {
+  & > .label {
     flex: 1;
     min-width: 0;
     white-space: nowrap;
@@ -378,7 +378,7 @@ export function TimelineView({ cards, boards, columns, weekStartsOn, anchor, onA
             return (
               <RowFragment key={card.id}>
                 <RowLabel $completed={Boolean(card.completedAt)} onClick={() => onOpen(card.id)} onContextMenu={(event) => onContextMenu(event, card)} title={card.title}>
-                  <span>{card.title}</span>
+                  <span className="label">{card.title}</span>
                   <Muted style={{ fontSize: t.typography.xs, flex: "0 0 auto" }}>{formatDue(card.dueAt)}</Muted>
                 </RowLabel>
                 <RowTrack $days={totalDays}>
