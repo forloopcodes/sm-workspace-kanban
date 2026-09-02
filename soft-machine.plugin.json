@@ -1,0 +1,27 @@
+{
+  "id": "kanban",
+  "label": "Kanban",
+  "shortLabel": "KAN",
+  "color": "#7C6FE0",
+  "description": "Multiplayer kanban boards with tasks, scheduling and automations.",
+  "module": "./src/module.tsx",
+  "panels": [
+    {
+      "id": "kanban-board",
+      "title": "Kanban",
+      "layout": {
+        "width": 960,
+        "minWidth": "default"
+      }
+    },
+    {
+      "id": "kanban-tasks",
+      "title": "Tasks",
+      "layout": {
+        "width": 440,
+        "minWidth": "default"
+      }
+    }
+  ],
+  "panelExtensions": []
+}
